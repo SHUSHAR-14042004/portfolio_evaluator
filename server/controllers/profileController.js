@@ -1,5 +1,6 @@
 // server/controllers/profileController.js
 const githubService = require('../services/githubService');
+const scoringService = require('../services/scoringService');
 
 const getProfileData = async (req, res) => {
   try {
@@ -13,13 +14,17 @@ const getProfileData = async (req, res) => {
       githubService.getUserEvents(username),
     ]);
 
-    // For today, we are just returning the raw, un-scored data to prove it works.
-    res.status(200).json({
-      message: "Data fetched successfully",
-      profile,
-      repoCount: repos.length,
-      eventCount: events.length
-    });
+    // Run the scoring algorithm
+const scoreData = scoringService.generateScoreCard(profile, repos, events);
+
+// Send the processed data back to the user
+res.status(200).json({
+  message: "Profile scored successfully",
+  username: profile.login,
+  avatarUrl: profile.avatar_url,
+  scores: scoreData,
+  // We will pull out top repos and language stats later!
+});
 
   } catch (error) {
     console.error("Error fetching GitHub data:", error.message);
