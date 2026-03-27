@@ -102,6 +102,45 @@ export default function Report() {
         </div>
 
       </div>
+      {/* Top Repositories Section */}
+      <div style={{ marginTop: '50px' }}>
+        <h2 style={{ color: '#24292e', borderBottom: '2px solid #eaecef', paddingBottom: '10px' }}>
+          Top Repositories
+        </h2>
+        
+        {data.topRepos && data.topRepos.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
+            {data.topRepos.map((repo, index) => (
+              <a 
+                key={index} 
+                href={repo.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div style={{ padding: '20px', backgroundColor: '#fff', border: '1px solid #e1e4e8', borderRadius: '6px', height: '100%', transition: 'transform 0.2s', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+                  <h3 style={{ margin: '0 0 10px 0', color: '#0366d6', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    📦 {repo.name}
+                  </h3>
+                  <p style={{ color: '#586069', fontSize: '0.9em', marginBottom: '15px', lineHeight: '1.4' }}>
+                    {repo.description.length > 100 ? repo.description.substring(0, 100) + '...' : repo.description}
+                  </p>
+                  <div style={{ display: 'flex', gap: '15px', fontSize: '0.85em', color: '#586069' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ width: '10px', height: '10px', backgroundColor: '#f1e05a', borderRadius: '50%' }}></span>
+                      {repo.language}
+                    </span>
+                    <span>⭐ {repo.stars}</span>
+                    <span>🍴 {repo.forks}</span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p style={{ color: '#586069' }}>No public repositories found.</p>
+        )}
+      </div>
     </div>
   );
 }
