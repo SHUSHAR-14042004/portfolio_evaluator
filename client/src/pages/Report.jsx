@@ -35,7 +35,29 @@ export default function Report() {
   }, [username]);
 
   if (loading) return <h2 style={{ textAlign: 'center', marginTop: '50px' }}>Analyzing GitHub Data...</h2>;
-  if (error) return <h2 style={{ textAlign: 'center', color: 'red', marginTop: '50px' }}>Error: {error}</h2>;
+  if (error) {
+    return (
+      <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif', padding: '0 20px' }}>
+        <div style={{ display: 'inline-block', padding: '40px', backgroundColor: '#ffeef0', border: '1px solid #ffdce0', borderRadius: '8px', maxWidth: '500px' }}>
+          <h2 style={{ color: '#d73a49', marginTop: 0 }}>⚠️ Oops! Something went wrong.</h2>
+          <p style={{ color: '#24292e', fontSize: '18px', lineHeight: '1.5' }}>{error}</p>
+          
+          <Link to="/" style={{ 
+            display: 'inline-block', 
+            marginTop: '25px', 
+            padding: '12px 24px', 
+            backgroundColor: '#0366d6', 
+            color: 'white', 
+            textDecoration: 'none', 
+            borderRadius: '6px',
+            fontWeight: 'bold'
+          }}>
+            ← Try Another Search
+          </Link>
+        </div>
+      </div>
+    );
+  }
   if (!data) return null;
 
   // Format data specifically for the Radar Chart
