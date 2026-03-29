@@ -3,13 +3,20 @@ import { useParams, Link } from 'react-router-dom';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer 
 } from 'recharts';
+import { useEffect, useState, useRef } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
 
 export default function Report() {
   const { username } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const reportRef = useRef();
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -69,7 +76,19 @@ export default function Report() {
     { subject: 'Community', score: (data.scores.community / 20) * 100, fullMark: 100 },
     { subject: 'Hiring Ready', score: (data.scores.hiringReady / 15) * 100, fullMark: 100 },
   ];
+  
+  const handleDownloadPdf = async () => {
+      const element = reportRef.current;
+      const canvas = await html2canvas(element, { scale: 2 });
+      const data = canvas.toDataURL('image/png');
 
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(data, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${data.username || 'github'}_scorecard.pdf`);
+    };
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
       <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
@@ -163,6 +182,16 @@ export default function Report() {
           <p style={{ color: '#586069' }}>No public repositories found.</p>
         )}
       </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
+      <button 
+        onClick={handleDownloadPdf}
+        style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+      >
+        📄 Export as PDF
+      </button>
     </div>
+    </div>
+       
   );
 }
