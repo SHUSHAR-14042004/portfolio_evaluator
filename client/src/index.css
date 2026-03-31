@@ -109,3 +109,33 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+
+/* client/src/index.css */
+
+/* 1. Light Mode Variables (Default) */
+:root {
+  --bg-main: #ffffff;
+  --text-main: #24292e;
+  --bg-card: #f6f8fa;
+  --border: #eaecef;
+  --text-muted: #586069;
+}
+
+/* 2. Dark Mode Variables */
+[data-theme='dark'] {
+  --bg-main: #0d1117;
+  --text-main: #c9d1d9;
+  --bg-card: #161b22;
+  --border: #30363d;
+  --text-muted: #8b949e;
+}
+
+/* 3. Apply variables to the global body */
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect */
+  margin: 0;
+  min-height: 100vh;
+}

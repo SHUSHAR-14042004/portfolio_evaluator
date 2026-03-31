@@ -39,8 +39,8 @@ export default function Home() {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif', padding: '0 20px' }}>
-      <h1 style={{ fontSize: '2.5em', color: '#24292e', marginBottom: '10px' }}>GitHub Portfolio Evaluator</h1>
-      <p style={{ color: '#586069', fontSize: '1.2em', marginBottom: '40px' }}>Enter a GitHub username to generate a comprehensive scorecard.</p>
+     <h1 style={{ fontSize: '2.5em', color: 'var(--text-main)', marginBottom: '10px' }}>GitHub Portfolio Evaluator</h1>
+     <p style={{ color: 'var(--text-muted)', fontSize: '1.2em', marginBottom: '40px' }}>Enter a GitHub username to generate a comprehensive scorecard.</p>
       
       <form onSubmit={handleSearch} style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '40px' }}>
         <input 
@@ -57,9 +57,9 @@ export default function Home() {
 
       {/* Recent Searches UI */}
       {recentSearches.length > 0 && (
-        <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'left', backgroundColor: '#f6f8fa', padding: '20px', borderRadius: '8px', border: '1px solid #eaecef' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-            <h3 style={{ margin: 0, color: '#24292e', fontSize: '1em' }}>🕒 Recent Searches</h3>
+        <div style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'left', backgroundColor: 'var(--bg-card)', padding: '20px', borderRadius: '8px', border: '1px solid var(--border)' }}>
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+    <h3 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1em' }}>🕒 Recent Searches</h3>
             <button onClick={clearHistory} style={{ background: 'none', border: 'none', color: '#d73a49', cursor: 'pointer', fontSize: '0.85em' }}>Clear</button>
           </div>
           

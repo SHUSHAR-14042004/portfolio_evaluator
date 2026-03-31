@@ -19,6 +19,10 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 5000;
 
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 // 4. Define Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -26,8 +30,3 @@ app.get('/api/health', (req, res) => {
 
 // Mount the profile routes under the '/api' prefix
 app.use('/api', profileRoutes);
-
-// 5. Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});

@@ -10,11 +10,25 @@ const octokit = new Octokit({
 });
 
 // 1. Fetch basic profile info (bio, followers, etc.)
+// Example of how your githubService functions should handle errors
 const getUserProfile = async (username) => {
-  const response = await octokit.rest.users.getByUsername({ username });
-  return response.data;
+  const response = await fetch(`https://api.github.com/users/${username}`, {
+    headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` }
+  });
+
+  if (!response.ok) {
+    // If GitHub says 404, we throw a specific error
+    if (response.status === 404) {
+      throw new Error(`We couldn't find a GitHub user named "${username}".`);
+    }
+    // Handle rate limits or other errors
+    throw new Error(`GitHub API Error: ${response.statusText}`);
+  }
+
+  return await response.json();
 };
 
+// Make sure getUserRepos and getUserEvents have similar !response.ok checks!
 // 2. Fetch up to 100 repositories
 const getUserRepos = async (username) => {
   const response = await octokit.rest.repos.listForUser({
