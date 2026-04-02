@@ -139,3 +139,21 @@ body {
   margin: 0;
   min-height: 100vh;
 }
+
+/* Day 14: Skeleton Loading Animation */
+@keyframes pulse {
+  0% {
+    background-color: var(--border);
+  }
+  50% {
+    background-color: var(--bg-card);
+  }
+  100% {
+    background-color: var(--border);
+  }
+}
+
+.skeleton {
+  animation: pulse 1.5s infinite ease-in-out;
+  border-radius: 6px;
+}

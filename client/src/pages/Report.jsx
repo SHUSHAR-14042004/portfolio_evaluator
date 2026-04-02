@@ -39,8 +39,34 @@ export default function Report() {
     fetchProfile();
   }, [username]);
 
-  if (loading) return <h2 style={{ textAlign: 'center', marginTop: '50px', color: 'var(--text-main)' }}>Analyzing GitHub Data...</h2>;
-  
+ if (loading) {
+    return (
+      <div style={{ maxWidth: '800px', margin: '50px auto', padding: '0 20px' }}>
+        <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
+        
+        /* Skeleton Profile Header */
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
+          <div className="skeleton" style={{ width: '120px', height: '120px', borderRadius: '50%' }}></div>
+          <div style={{ flex: 1 }}>
+            <div className="skeleton" style={{ width: '40%', height: '32px', marginBottom: '15px' }}></div>
+            <div className="skeleton" style={{ width: '80%', height: '20px', marginBottom: '8px' }}></div>
+            <div className="skeleton" style={{ width: '60%', height: '20px', marginBottom: '15px' }}></div>
+            <div style={{ display: 'flex', gap: '15px' }}>
+              <div className="skeleton" style={{ width: '100px', height: '30px', borderRadius: '12px' }}></div>
+              <div className="skeleton" style={{ width: '100px', height: '30px', borderRadius: '12px' }}></div>
+            </div>
+          </div>
+        </div>
+
+        /* Skeleton Scorecard & Charts Area */
+        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '30px', gap: '20px' }}>
+          <div className="skeleton" style={{ flex: '1 1 300px', height: '350px', borderRadius: '12px' }}></div>
+          <div className="skeleton" style={{ flex: '1 1 400px', height: '350px', borderRadius: '12px' }}></div>
+        </div>
+      </div>
+    );
+  }
+ 
   if (error) {
     return (
       <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif', padding: '0 20px' }}>
@@ -98,7 +124,8 @@ export default function Report() {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`${data.username || 'github'}_scorecard.pdf`);
   };
-
+   console.log("Backend Data:", data.scores);
+   
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
       

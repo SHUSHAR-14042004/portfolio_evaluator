@@ -64,7 +64,8 @@ const calculateActivity = (events) => {
 };
 
 // Master Scoring Function
-const generateScoreCard = (profile, repos, events) => {
+// Master Scoring Function
+  const generateScoreCard = (profile, repos, events) => {
   const hiringReady = calculateHiringReady(profile);
   const community = calculateCommunity(profile, repos);
   const diversity = calculateDiversity(repos);
@@ -73,15 +74,14 @@ const generateScoreCard = (profile, repos, events) => {
 
   const overallScore = Math.round(hiringReady + community + diversity + codeQuality + activity);
 
+  // FIXED: Variable names now match exactly what was calculated above!
   return {
     overall: overallScore,
-    breakdown: {
-      activity,      // out of 25
-      codeQuality,   // out of 20
-      diversity,     // out of 20
-      community,     // out of 20
-      hiringReady    // out of 15
-    }
+    activity: activity,
+    codeQuality: codeQuality,
+    diversity: diversity,
+    community: community,
+    hiringReady: hiringReady
   };
 };
 

@@ -7,7 +7,8 @@ const getProfileData = async (req, res) => {
   try {
     const { username } = req.params;
     const lowerCaseUsername = username.toLowerCase();
-
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
     // 1. Check if a cached report exists
     const cachedReport = await Report.findOne({ username: lowerCaseUsername });
     if (cachedReport) {
@@ -51,17 +52,22 @@ const getProfileData = async (req, res) => {
     // -------------------------------
 
     // 4. Save to Database (Update this block to include topRepos and languages)
-    const newReport = await Report.create({
-      username: lowerCaseUsername,
-      avatarUrl: profile.avatar_url,
-      name: profile.name,
-      bio: profile.bio,
-      followers: profile.followers,
-      publicRepos: profile.public_repos,
-      scores: scoreData,
-      topRepos: topRepos,   // <-- Added
-      languages: languages  // <-- Added
-    });
+   // 4. Save or Update the Database (The "Upsert" method)
+    const newReport = await Report.findOneAndUpdate(
+      { username: lowerCaseUsername }, // 1. Find a report with this username
+      { // 2. Update it with this fresh data
+        username: lowerCaseUsername,
+        avatarUrl: profile.avatar_url,
+        name: profile.name,
+        bio: profile.bio,
+        followers: profile.followers,
+        publicRepos: profile.public_repos,
+        scores: scoreData,
+        topRepos: topRepos,
+        languages: languages
+      },
+      { new: true, upsert: true } // 3. Options: Return the new doc, and create it if it doesn't exist
+    );
 
     // 5. Send response
     res.status(200).json({ message: "New profile scored and cached", data: newReport });
