@@ -32,7 +32,7 @@ const getProfileData = async (req, res) => {
     const topRepos = repos
       .filter(repo => !repo.fork)
       .sort((a, b) => b.stargazers_count - a.stargazers_count)
-      .slice(0, 4)
+      .slice(0, 30)
       .map(repo => ({
         name: repo.name,
         stars: repo.stargazers_count,

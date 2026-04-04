@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { GitHubCalendar } from "react-github-calendar";
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
-  PieChart, Pie, Cell, Tooltip, Legend // <-- Day 13 Imports Added
+  PieChart, Pie, Cell, Tooltip, Legend 
 } from 'recharts';
+import { GitHubCalendar } from 'react-github-calendar';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -14,6 +14,11 @@ export default function Report() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Day 16: Filtering & Sorting State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterLang, setFilterLang] = useState('All');
+  const [sortType, setSortType] = useState('stars');
+
   const reportRef = useRef();
   
   useEffect(() => {
@@ -40,12 +45,13 @@ export default function Report() {
     fetchProfile();
   }, [username]);
 
- if (loading) {
+  // Loading Skeletons
+  if (loading) {
     return (
       <div style={{ maxWidth: '800px', margin: '50px auto', padding: '0 20px' }}>
         <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
         
-        /* Skeleton Profile Header */
+        {/* Skeleton Profile Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
           <div className="skeleton" style={{ width: '120px', height: '120px', borderRadius: '50%' }}></div>
           <div style={{ flex: 1 }}>
@@ -59,35 +65,25 @@ export default function Report() {
           </div>
         </div>
 
-        /* Skeleton Scorecard & Charts Area */
+        {/* Skeleton Scorecard & Charts Area */}
         <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '30px', gap: '20px' }}>
           <div className="skeleton" style={{ flex: '1 1 300px', height: '350px', borderRadius: '12px' }}></div>
           <div className="skeleton" style={{ flex: '1 1 400px', height: '350px', borderRadius: '12px' }}></div>
         </div>
 
-        /* ADD THIS NEW SKELETON FOR THE CALENDAR */
+        {/* Skeleton Calendar */}
         <div className="skeleton" style={{ width: '100%', height: '180px', marginTop: '40px', borderRadius: '12px' }}></div>
       </div>
     );
   }
- 
+  
   if (error) {
     return (
       <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif', padding: '0 20px' }}>
         <div style={{ display: 'inline-block', padding: '40px', backgroundColor: '#ffeef0', border: '1px solid #ffdce0', borderRadius: '8px', maxWidth: '500px' }}>
           <h2 style={{ color: '#d73a49', marginTop: 0 }}>⚠️ Oops! Something went wrong.</h2>
-          <p style={{ color: '#24292e', fontSize: '18px', lineHeight: '1.5' }}>{error}</p>
-          
-          <Link to="/" style={{ 
-            display: 'inline-block', 
-            marginTop: '25px', 
-            padding: '12px 24px', 
-            backgroundColor: '#0366d6', 
-            color: 'white', 
-            textDecoration: 'none', 
-            borderRadius: '6px',
-            fontWeight: 'bold'
-          }}>
+          <p style={{ color: 'var(--text-main)', fontSize: '18px', lineHeight: '1.5' }}>{error}</p>
+          <Link to="/" style={{ display: 'inline-block', marginTop: '25px', padding: '12px 24px', backgroundColor: '#0366d6', color: 'white', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold' }}>
             ← Try Another Search
           </Link>
         </div>
@@ -106,40 +102,53 @@ export default function Report() {
     { subject: 'Hiring Ready', score: (data.scores.hiringReady / 15) * 100, fullMark: 100 },
   ];
 
-  // Day 13: Pie Chart Data Formatting
+  // Pie Chart Data
   const languageData = data.languages 
-    ? Object.entries(data.languages)
-        .map(([key, value]) => ({ name: key, value }))
-        .sort((a, b) => b.value - a.value)
+    ? Object.entries(data.languages).map(([key, value]) => ({ name: key, value })).sort((a, b) => b.value - a.value)
     : [];
-
   const PIE_COLORS = ['#f1e05a', '#3178c6', '#e34c26', '#563d7c', '#2b7489', '#b07219', '#89e051', '#f18e33'];
   
+  // Day 16: Dynamic Filtering & Sorting Logic
+  const availableLanguages = data && data.topRepos 
+    ? ['All', ...new Set(data.topRepos.map(r => r.language).filter(l => l !== 'Unknown'))]
+    : ['All'];
+
+  const displayedRepos = data && data.topRepos 
+    ? data.topRepos
+        .filter(repo => {
+          const searchLower = searchTerm.toLowerCase();
+          const matchesSearch = repo.name.toLowerCase().includes(searchLower) || 
+                                (repo.description && repo.description.toLowerCase().includes(searchLower));
+          const matchesLang = filterLang === 'All' || repo.language === filterLang;
+          return matchesSearch && matchesLang;
+        })
+        .sort((a, b) => {
+          if (sortType === 'stars') return b.stars - a.stars;
+          if (sortType === 'forks') return b.forks - a.forks;
+          if (sortType === 'name') return a.name.localeCompare(b.name);
+          return 0;
+        })
+    : [];
+
   // PDF Download Logic
   const handleDownloadPdf = async () => {
     const element = reportRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
     const imgData = canvas.toDataURL('image/png');
-
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`${data.username || 'github'}_scorecard.pdf`);
   };
-   console.log("Backend Data:", data.scores);
-   
+
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
       
       {/* Top Navigation Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
-        <button 
-          onClick={handleDownloadPdf}
-          style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
+        <button onClick={handleDownloadPdf} style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
           📄 Export as PDF
         </button>
       </div>
@@ -172,7 +181,6 @@ export default function Report() {
             </h2>
             <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '20px' }}>OVERALL SCORE</p>
             <hr style={{ border: 'none', borderTop: '1px solid var(--border)', marginBottom: '20px' }} />
-            
             <ul style={{ listStyleType: 'none', padding: 0, fontSize: '1.1em', display: 'flex', flexDirection: 'column', gap: '15px', color: 'var(--text-main)' }}>
               <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>📈 Activity</span> <strong>{data.scores.activity}/25</strong></li>
               <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>💻 Code Quality</span> <strong>{data.scores.codeQuality}/20</strong></li>
@@ -181,7 +189,6 @@ export default function Report() {
               <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>🎯 Hiring Ready</span> <strong>{data.scores.hiringReady}/15</strong></li>
             </ul>
           </div>
-
           <div style={{ flex: '1 1 400px', height: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
@@ -194,76 +201,91 @@ export default function Report() {
           </div>
         </div>
 
-        {/* Day 13: Language Proficiency Pie Chart Section */}
+        {/* Language Pie Chart */}
         {languageData.length > 0 && (
           <div style={{ marginTop: '40px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-            <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>
-              Language Proficiency
-            </h2>
+            <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Language Proficiency</h2>
             <div style={{ height: '300px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={languageData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={80}
-                    outerRadius={110}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
+                  <Pie data={languageData} cx="50%" cy="50%" innerRadius={80} outerRadius={110} paddingAngle={3} dataKey="value">
                     {languageData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-main)', borderRadius: '8px' }}
-                    itemStyle={{ color: 'var(--text-main)' }}
-                  />
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-main)', borderRadius: '8px' }} itemStyle={{ color: 'var(--text-main)' }} />
                   <Legend wrapperStyle={{ color: 'var(--text-main)' }}/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
         )}
-        {/* Day 15: GitHub Contribution Calendar */}
+
+        {/* GitHub Calendar */}
         <div style={{ marginTop: '40px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)', overflowX: 'auto' }}>
-          <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>
-            Contribution History
-          </h2>
+          <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Contribution History</h2>
           <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--text-main)', minWidth: '700px' }}>
             <GitHubCalendar 
               username={username} 
-              blockSize={14}
-              blockMargin={5}
-              fontSize={14}
-              // This ensures the text matches your Light/Dark mode!
+              blockSize={14} 
+              blockMargin={5} 
+              fontSize={14} 
               colorScheme={document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'} 
             />
           </div>
         </div>
-        {/* Top Repositories Section */}
+
+        {/* Interactive Repositories Section */}
         <div style={{ marginTop: '50px' }}>
-          <h2 style={{ color: 'var(--text-main)', borderBottom: '2px solid var(--border)', paddingBottom: '10px' }}>
-            Top Repositories
-          </h2>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2px solid var(--border)', paddingBottom: '15px', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
+            <h2 style={{ color: 'var(--text-main)', margin: 0 }}>
+              Repositories <span style={{ fontSize: '0.6em', color: 'var(--text-muted)', backgroundColor: 'var(--bg-card)', padding: '4px 10px', borderRadius: '12px', border: '1px solid var(--border)', verticalAlign: 'middle' }}>{displayedRepos.length}</span>
+            </h2>
+            
+            {/* Control Bar */}
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <input 
+                type="text" 
+                placeholder="Find a repository..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none' }}
+              />
+              <select 
+                value={filterLang} 
+                onChange={(e) => setFilterLang(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none', cursor: 'pointer' }}
+              >
+                {availableLanguages.map(lang => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
+              <select 
+                value={sortType} 
+                onChange={(e) => setSortType(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none', cursor: 'pointer' }}
+              >
+                <option value="stars">⭐ Sort by Stars</option>
+                <option value="forks">🍴 Sort by Forks</option>
+                <option value="name">🔤 Sort by Name</option>
+              </select>
+            </div>
+          </div>
           
-          {data.topRepos && data.topRepos.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
-              {data.topRepos.map((repo, index) => (
-                <a 
-                  key={index} 
-                  href={repo.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
+          {/* Repository Grid */}
+          {displayedRepos.length > 0 ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+              {displayedRepos.map((repo, index) => (
+                <a key={index} href={repo.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
                   <div style={{ padding: '20px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '6px', height: '100%', transition: 'transform 0.2s', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
                     <h3 style={{ margin: '0 0 10px 0', color: '#0366d6', display: 'flex', alignItems: 'center', gap: '8px' }}>
                       📦 {repo.name}
                     </h3>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.9em', marginBottom: '15px', lineHeight: '1.4' }}>
-                      {repo.description.length > 100 ? repo.description.substring(0, 100) + '...' : repo.description}
+                      {/* SAFE CHECK: Checks if description exists before checking length */}
+                      {repo.description 
+                        ? (repo.description.length > 100 ? repo.description.substring(0, 100) + '...' : repo.description) 
+                        : 'No description provided.'}
                     </p>
                     <div style={{ display: 'flex', gap: '15px', fontSize: '0.85em', color: 'var(--text-muted)' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -278,7 +300,9 @@ export default function Report() {
               ))}
             </div>
           ) : (
-            <p style={{ color: 'var(--text-muted)' }}>No public repositories found.</p>
+            <div style={{ textAlign: 'center', padding: '40px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px dashed var(--border)', color: 'var(--text-muted)' }}>
+              No repositories match your search criteria.
+            </div>
           )}
         </div>
 
