@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { GitHubCalendar } from "react-github-calendar";
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
   PieChart, Pie, Cell, Tooltip, Legend // <-- Day 13 Imports Added
@@ -63,6 +64,9 @@ export default function Report() {
           <div className="skeleton" style={{ flex: '1 1 300px', height: '350px', borderRadius: '12px' }}></div>
           <div className="skeleton" style={{ flex: '1 1 400px', height: '350px', borderRadius: '12px' }}></div>
         </div>
+
+        /* ADD THIS NEW SKELETON FOR THE CALENDAR */
+        <div className="skeleton" style={{ width: '100%', height: '180px', marginTop: '40px', borderRadius: '12px' }}></div>
       </div>
     );
   }
@@ -222,7 +226,22 @@ export default function Report() {
             </div>
           </div>
         )}
-
+        {/* Day 15: GitHub Contribution Calendar */}
+        <div style={{ marginTop: '40px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)', overflowX: 'auto' }}>
+          <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>
+            Contribution History
+          </h2>
+          <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--text-main)', minWidth: '700px' }}>
+            <GitHubCalendar 
+              username={username} 
+              blockSize={14}
+              blockMargin={5}
+              fontSize={14}
+              // This ensures the text matches your Light/Dark mode!
+              colorScheme={document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'} 
+            />
+          </div>
+        </div>
         {/* Top Repositories Section */}
         <div style={{ marginTop: '50px' }}>
           <h2 style={{ color: 'var(--text-main)', borderBottom: '2px solid var(--border)', paddingBottom: '10px' }}>
