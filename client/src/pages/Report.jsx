@@ -108,6 +108,16 @@ export default function Report() {
     : [];
   const PIE_COLORS = ['#f1e05a', '#3178c6', '#e34c26', '#563d7c', '#2b7489', '#b07219', '#89e051', '#f18e33'];
   
+  // Day 17: Badges & Achievements Logic
+  const badges = [];
+  if (data && data.scores) {
+    if (data.scores.overall >= 80) badges.push({ icon: '🏆', title: 'Elite Coder', desc: 'Achieved an overall score of 80+' });
+    if (data.followers >= 50) badges.push({ icon: '🌟', title: 'Community Pillar', desc: 'Has 50+ GitHub followers' });
+    if (Object.keys(data.languages || {}).length >= 5) badges.push({ icon: '🌍', title: 'Polyglot', desc: 'Writes code in 5+ different languages' });
+    if (data.scores.activity >= 20) badges.push({ icon: '🔥', title: 'Relentless', desc: 'Extremely high recent commit activity' });
+    if (data.publicRepos >= 30) badges.push({ icon: '📦', title: 'Prolific', desc: 'Maintains 30+ public repositories' });
+  }
+
   // Day 16: Dynamic Filtering & Sorting Logic
   const availableLanguages = data && data.topRepos 
     ? ['All', ...new Set(data.topRepos.map(r => r.language).filter(l => l !== 'Unknown'))]
@@ -172,6 +182,37 @@ export default function Report() {
             </div>
           </div>
         </div>
+        
+        {/* Day 17: Achievements Badges Section */}
+        {badges.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
+            {badges.map((badge, idx) => (
+              <div 
+                key={idx} 
+                title={badge.desc} 
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '8px', 
+                  padding: '8px 14px', 
+                  backgroundColor: 'var(--bg-card)', 
+                  border: '1px solid var(--border)', 
+                  borderRadius: '20px', 
+                  fontSize: '0.95em', 
+                  color: 'var(--text-main)', 
+                  cursor: 'help', 
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                  transition: 'transform 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+              >
+                <span style={{ fontSize: '1.2em' }}>{badge.icon}</span>
+                <strong>{badge.title}</strong>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Scorecard & Radar Chart Section */}
         <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '30px', gap: '20px' }}>
