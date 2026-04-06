@@ -7,6 +7,7 @@ import {
 import { GitHubCalendar } from 'react-github-calendar';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import toast from 'react-hot-toast'; // <-- Add this!
 
 export default function Report() {
   const { username } = useParams();
@@ -152,15 +153,39 @@ export default function Report() {
     pdf.save(`${data.username || 'github'}_scorecard.pdf`);
   };
 
+  const handleShareProfile = () => {
+  // Copies the current URL in the browser window
+  navigator.clipboard.writeText(window.location.href);
+
+  // Triggers the beautiful success pop-up
+  toast.success('Profile link copied to clipboard!', {
+    icon: '🔗',
+  });
+};
+
   return (
     <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
       
       {/* Top Navigation Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
-        <button onClick={handleDownloadPdf} style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-          📄 Export as PDF
-        </button>
+        
+        {/* Action Buttons Container */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={handleShareProfile}
+            style={{ padding: '8px 16px', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.2s' }}
+          >
+            🔗 Share
+          </button>
+
+          <button 
+            onClick={handleDownloadPdf}
+            style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
+          >
+            📄 Export PDF
+          </button>
+        </div>
       </div>
       
       {/* PDF CAPTURE AREA */}

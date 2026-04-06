@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast'; // ✅ Import is here
 import Home from './pages/Home';
 import Report from './pages/Report';
 
@@ -30,6 +31,19 @@ function App() {
 
   return (
     <Router>
+      
+      {/* ✅ Day 18: Global Toaster Notification Container ADDED HERE */}
+      <Toaster 
+        position="top-center" 
+        toastOptions={{
+          style: {
+            background: 'var(--bg-card)',
+            color: 'var(--text-main)',
+            border: '1px solid var(--border)',
+          }
+        }} 
+      />
+
       {/* Floating Theme Toggle Button */}
       <button 
         onClick={toggleTheme}
