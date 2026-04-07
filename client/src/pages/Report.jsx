@@ -28,7 +28,9 @@ export default function Report() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`http://localhost:5000/api/profile/${username}`);
+       // If we are in development, use localhost. If in production, use the relative path!
+        const API_BASE_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : '';
+        const response = await fetch(`${API_BASE_URL}/api/profile/${username}`);
         const result = await response.json();
 
         if (!response.ok) {
