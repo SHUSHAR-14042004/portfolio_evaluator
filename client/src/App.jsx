@@ -37,7 +37,7 @@ function MainLayout({ toggleTheme, isDark }) {
         zIndex: 100
       }}>
         <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem' }}>
-          🚀 GitHub Evaluator
+          Developer Portfolio Evaluator
         </h2>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
