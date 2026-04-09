@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'; // ✅ Import is here
 import Home from './pages/Home';
 import Report from './pages/Report';
+import Compare from './pages/Compare';
 
 function App() {
   const [isDark, setIsDark] = useState(false);
@@ -67,6 +68,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/report/:username" element={<Report />} />
+        <Route path="/compare" element={<Compare />} />
       </Routes>
     </Router>
   );
