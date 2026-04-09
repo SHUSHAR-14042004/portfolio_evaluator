@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast'; // ✅ Import is here
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast'; 
 import Home from './pages/Home';
 import Report from './pages/Report';
 import Compare from './pages/Compare';
@@ -33,7 +33,7 @@ function App() {
   return (
     <Router>
       
-      {/* ✅ Day 18: Global Toaster Notification Container ADDED HERE */}
+      {/* Global Toaster Notification Container */}
       <Toaster 
         position="top-center" 
         toastOptions={{
@@ -45,31 +45,59 @@ function App() {
         }} 
       />
 
-      {/* Floating Theme Toggle Button */}
-      <button 
-        onClick={toggleTheme}
-        style={{ 
-          position: 'absolute', 
-          top: '20px', 
-          right: '20px', 
-          padding: '8px 16px', 
-          cursor: 'pointer', 
-          borderRadius: '20px', 
-          border: '1px solid var(--border)', 
-          backgroundColor: 'var(--bg-card)', 
-          color: 'var(--text-main)',
-          fontWeight: 'bold',
-          transition: 'all 0.3s ease'
-        }}
-      >
-        {isDark ? '☀️ Light' : '🌙 Dark'}
-      </button>
+      {/* 🚀 THE PROFESSIONAL NAVBAR */}
+      {/* Notice how it is INSIDE the Router, but OUTSIDE the Routes! */}
+      <nav style={{ 
+        backgroundColor: 'var(--bg-card)', 
+        borderBottom: '1px solid var(--border-color, #e5e7eb)',
+        padding: '15px 40px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '30px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      }}>
+        {/* Logo/Brand */}
+        <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          🚀 Developer Portfolio Evaluator
+        </h2>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/report/:username" element={<Report />} />
-        <Route path="/compare" element={<Compare />} />
-      </Routes>
+        {/* Navigation Links & Theme Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <Link to="/" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Search</Link>
+          <Link to="/compare" style={{ textDecoration: 'none', color: 'var(--primary-color, #2563eb)', fontWeight: '600' }}>Compare Users</Link>
+          
+          {/* Integrated Theme Toggle */}
+          <button 
+            onClick={toggleTheme}
+            style={{ 
+              padding: '6px 12px', 
+              cursor: 'pointer', 
+              borderRadius: '20px', 
+              border: '1px solid var(--border-color, #e5e7eb)', 
+              backgroundColor: 'transparent', 
+              color: 'var(--text-main)',
+              fontWeight: '600',
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            {isDark ? '☀️ Light' : '🌙 Dark'}
+          </button>
+        </div>
+      </nav>
+
+      {/* The Page Content */}
+      <div style={{ padding: '0 20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/report/:username" element={<Report />} />
+          <Route path="/compare" element={<Compare />} />
+        </Routes>
+      </div>
+
     </Router>
   );
 }

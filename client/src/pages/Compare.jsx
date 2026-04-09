@@ -42,9 +42,9 @@ export default function Compare() {
       
       {/* Side-by-Side Inputs */}
       <form onSubmit={handleCompare} style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '40px' }}>
-        <input type="text" placeholder="User 1" value={user1} onChange={(e) => setUser1(e.target.value)} required />
+        <input type="text" placeholder="Username 1" value={user1} onChange={(e) => setUser1(e.target.value)} required />
         <span style={{ fontSize: '1.5em', fontWeight: 'bold' }}>VS</span>
-        <input type="text" placeholder="User 2" value={user2} onChange={(e) => setUser2(e.target.value)} required />
+        <input type="text" placeholder="Username 2" value={user2} onChange={(e) => setUser2(e.target.value)} required />
         <button type="submit" disabled={loading}>{loading ? 'Vs...' : 'Compare'}</button>
       </form>
 

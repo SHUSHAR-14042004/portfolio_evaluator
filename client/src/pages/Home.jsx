@@ -65,7 +65,7 @@ export default function Home() {
       <form onSubmit={handleSearch} style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
         <input 
           type="text" 
-          placeholder="e.g., torvalds" 
+          placeholder="Enter Github Username" 
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           style={{ padding: '12px 20px', fontSize: '16px', width: '300px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none' }}
@@ -118,7 +118,7 @@ export default function Home() {
       )}
       <div style={{ marginTop: '20px' }}>
   <Link to="/compare" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>
-    ✨ Try Compare Mode (Bonus)
+    ✨ Try Compare Mode 
   </Link>
 </div>
     </div>
