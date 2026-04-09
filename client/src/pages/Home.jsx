@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
+
 export default function Home() {
   const [username, setUsername] = useState('');
   const [recentSearches, setRecentSearches] = useState([]);
@@ -115,6 +116,11 @@ export default function Home() {
           </div>
         </div>
       )}
+      <div style={{ marginTop: '20px' }}>
+  <Link to="/compare" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>
+    ✨ Try Compare Mode (Bonus)
+  </Link>
+</div>
     </div>
   );
 }
