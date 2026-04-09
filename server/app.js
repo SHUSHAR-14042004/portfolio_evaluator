@@ -26,7 +26,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Mount the profile routes under the '/api' prefix
-app.use('/api', profileRoutes);
+app.use('/api/profile', profileRoutes);
 
 
 // ----------------------------------------------------
