@@ -1,105 +1,101 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast'; 
 import Home from './pages/Home';
 import Report from './pages/Report';
 import Compare from './pages/Compare';
 
-function App() {
-  const [isDark, setIsDark] = useState(false);
+// Main Layout Component (Handles Navbar, Footer, and full-screen spacing)
+function MainLayout({ toggleTheme, isDark }) {
+  const location = useLocation(); // Knows what page we are on
 
-  // Check local storage when the app first loads
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('github_theme');
-    if (savedTheme === 'dark') {
-      setIsDark(true);
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  }, []);
-
-  // Function to flip the theme
-  const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('github_theme', 'light');
-      setIsDark(false);
-    } else {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('github_theme', 'dark');
-      setIsDark(true);
-    }
-  };
+  // Helper for active button styles
+  const navLinkStyle = (path) => ({
+    textDecoration: 'none',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    fontWeight: '600',
+    transition: 'all 0.2s ease',
+    backgroundColor: location.pathname === path ? 'var(--primary)' : 'transparent',
+    color: location.pathname === path ? '#ffffff' : 'var(--text-muted)'
+  });
 
   return (
-    <Router>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       
-      {/* Global Toaster Notification Container */}
-      <Toaster 
-        position="top-center" 
-        toastOptions={{
-          style: {
-            background: 'var(--bg-card)',
-            color: 'var(--text-main)',
-            border: '1px solid var(--border)',
-          }
-        }} 
-      />
-
-      {/* 🚀 THE PROFESSIONAL NAVBAR */}
-      {/* Notice how it is INSIDE the Router, but OUTSIDE the Routes! */}
+      {/* PROFESSIONAL NAVBAR */}
       <nav style={{ 
         backgroundColor: 'var(--bg-card)', 
-        borderBottom: '1px solid var(--border-color, #e5e7eb)',
-        padding: '15px 40px',
+        borderBottom: '1px solid var(--border)',
+        padding: '15px 5%', /* 5% padding allows full width but keeps it off the very edges */
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '30px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+        boxShadow: 'var(--card-shadow)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100
       }}>
-        {/* Logo/Brand */}
-        <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          🚀 Developer Portfolio Evaluator
+        <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem' }}>
+          🚀 GitHub Evaluator
         </h2>
 
-        {/* Navigation Links & Theme Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'var(--text-muted)', fontWeight: '500' }}>Search</Link>
-          <Link to="/compare" style={{ textDecoration: 'none', color: 'var(--primary-color, #2563eb)', fontWeight: '600' }}>Compare Users</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flexWrap: 'wrap' }}>
+          <Link to="/" style={navLinkStyle('/')}>Search</Link>
+          <Link to="/compare" style={navLinkStyle('/compare')}>Compare Users</Link>
           
-          {/* Integrated Theme Toggle */}
-          <button 
-            onClick={toggleTheme}
-            style={{ 
-              padding: '6px 12px', 
-              cursor: 'pointer', 
-              borderRadius: '20px', 
-              border: '1px solid var(--border-color, #e5e7eb)', 
-              backgroundColor: 'transparent', 
-              color: 'var(--text-main)',
-              fontWeight: '600',
-              transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
+          <button onClick={toggleTheme} style={{ 
+            padding: '8px 16px', cursor: 'pointer', borderRadius: '20px', 
+            border: '1px solid var(--border)', backgroundColor: 'transparent', 
+            color: 'var(--text-main)', fontWeight: 'bold'
+          }}>
             {isDark ? '☀️ Light' : '🌙 Dark'}
           </button>
         </div>
       </nav>
 
-      {/* The Page Content */}
-      <div style={{ padding: '0 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* PAGE CONTENT (FULL SCREEN FLUID) */}
+      <main style={{ flex: 1, padding: '40px 5%', width: '100%' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/report/:username" element={<Report />} />
           <Route path="/compare" element={<Compare />} />
         </Routes>
-      </div>
+      </main>
 
-    </Router>
+      {/* PROFESSIONAL FOOTER */}
+      <footer style={{
+        padding: '24px', textAlign: 'center', backgroundColor: 'var(--bg-card)',
+        borderTop: '1px solid var(--border)', color: 'var(--text-muted)', marginTop: 'auto'
+      }}>
+        <p style={{ margin: 0 }}>© {new Date().getFullYear()} Developer Portfolio Evaluator. Built for the modern web.</p>
+      </footer>
+
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('github_theme') === 'dark') {
+      setIsDark(true);
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('github_theme', newTheme);
+    setIsDark(!isDark);
+  };
+
+  return (
+    <Router>
+      <Toaster position="top-center" toastOptions={{ style: { background: 'var(--bg-card)', color: 'var(--text-main)', border: '1px solid var(--border)' } }} />
+      <MainLayout toggleTheme={toggleTheme} isDark={isDark} />
+    </Router>
+  );
+}

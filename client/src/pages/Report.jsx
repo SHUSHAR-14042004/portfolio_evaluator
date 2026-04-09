@@ -7,7 +7,7 @@ import {
 import { GitHubCalendar } from 'react-github-calendar';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import toast from 'react-hot-toast'; // <-- Add this!
+import toast from 'react-hot-toast';
 
 export default function Report() {
   const { username } = useParams();
@@ -15,7 +15,6 @@ export default function Report() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Day 16: Filtering & Sorting State
   const [searchTerm, setSearchTerm] = useState('');
   const [filterLang, setFilterLang] = useState('All');
   const [sortType, setSortType] = useState('stars');
@@ -28,7 +27,6 @@ export default function Report() {
         setLoading(true);
         setError(null);
         
-       // If we are in development, use localhost. If in production, use the relative path!
         const API_BASE_URL = import.meta.env.MODE === 'development' ? 'http://localhost:5000' : '';
         const response = await fetch(`${API_BASE_URL}/api/profile/${username}`);
         const result = await response.json();
@@ -48,45 +46,21 @@ export default function Report() {
     fetchProfile();
   }, [username]);
 
-  // Loading Skeletons
   if (loading) {
     return (
-      <div style={{ maxWidth: '800px', margin: '50px auto', padding: '0 20px' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
-        
-        {/* Skeleton Profile Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '30px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
-          <div className="skeleton" style={{ width: '120px', height: '120px', borderRadius: '50%' }}></div>
-          <div style={{ flex: 1 }}>
-            <div className="skeleton" style={{ width: '40%', height: '32px', marginBottom: '15px' }}></div>
-            <div className="skeleton" style={{ width: '80%', height: '20px', marginBottom: '8px' }}></div>
-            <div className="skeleton" style={{ width: '60%', height: '20px', marginBottom: '15px' }}></div>
-            <div style={{ display: 'flex', gap: '15px' }}>
-              <div className="skeleton" style={{ width: '100px', height: '30px', borderRadius: '12px' }}></div>
-              <div className="skeleton" style={{ width: '100px', height: '30px', borderRadius: '12px' }}></div>
-            </div>
-          </div>
-        </div>
-
-        {/* Skeleton Scorecard & Charts Area */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '30px', gap: '20px' }}>
-          <div className="skeleton" style={{ flex: '1 1 300px', height: '350px', borderRadius: '12px' }}></div>
-          <div className="skeleton" style={{ flex: '1 1 400px', height: '350px', borderRadius: '12px' }}></div>
-        </div>
-
-        {/* Skeleton Calendar */}
-        <div className="skeleton" style={{ width: '100%', height: '180px', marginTop: '40px', borderRadius: '12px' }}></div>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
+        <h2 style={{ color: 'var(--text-main)', textAlign: 'center' }}>Generating Scorecard...</h2>
       </div>
     );
   }
   
   if (error) {
     return (
-      <div style={{ textAlign: 'center', marginTop: '100px', fontFamily: 'sans-serif', padding: '0 20px' }}>
-        <div style={{ display: 'inline-block', padding: '40px', backgroundColor: '#ffeef0', border: '1px solid #ffdce0', borderRadius: '8px', maxWidth: '500px' }}>
-          <h2 style={{ color: '#d73a49', marginTop: 0 }}>⚠️ Oops! Something went wrong.</h2>
-          <p style={{ color: 'var(--text-main)', fontSize: '18px', lineHeight: '1.5' }}>{error}</p>
-          <Link to="/" style={{ display: 'inline-block', marginTop: '25px', padding: '12px 24px', backgroundColor: '#0366d6', color: 'white', textDecoration: 'none', borderRadius: '6px', fontWeight: 'bold' }}>
+      <div style={{ textAlign: 'center', marginTop: '50px' }}>
+        <div className="dashboard-card" style={{ display: 'inline-block', maxWidth: '500px', borderColor: '#f87171' }}>
+          <h2 style={{ color: '#ef4444', marginTop: 0 }}>⚠️ Oops! Something went wrong.</h2>
+          <p style={{ color: 'var(--text-main)', fontSize: '1.1rem' }}>{error}</p>
+          <Link to="/" className="btn-primary" style={{ display: 'inline-block', marginTop: '20px', textDecoration: 'none' }}>
             ← Try Another Search
           </Link>
         </div>
@@ -96,7 +70,7 @@ export default function Report() {
   
   if (!data) return null;
 
-  // Radar Chart Data
+  // Chart Data
   const chartData = [
     { subject: 'Activity', score: (data.scores.activity / 25) * 100, fullMark: 100 },
     { subject: 'Code Quality', score: (data.scores.codeQuality / 20) * 100, fullMark: 100 },
@@ -105,13 +79,12 @@ export default function Report() {
     { subject: 'Hiring Ready', score: (data.scores.hiringReady / 15) * 100, fullMark: 100 },
   ];
 
-  // Pie Chart Data
   const languageData = data.languages 
     ? Object.entries(data.languages).map(([key, value]) => ({ name: key, value })).sort((a, b) => b.value - a.value)
     : [];
-  const PIE_COLORS = ['#f1e05a', '#3178c6', '#e34c26', '#563d7c', '#2b7489', '#b07219', '#89e051', '#f18e33'];
+  const PIE_COLORS = ['#f1e05a', '#3b82f6', '#e34c26', '#8b5cf6', '#14b8a6', '#f59e0b', '#10b981', '#f97316'];
   
-  // Day 17: Badges & Achievements Logic
+  // Badges Logic
   const badges = [];
   if (data && data.scores) {
     if (data.scores.overall >= 80) badges.push({ icon: '🏆', title: 'Elite Coder', desc: 'Achieved an overall score of 80+' });
@@ -121,7 +94,7 @@ export default function Report() {
     if (data.publicRepos >= 30) badges.push({ icon: '📦', title: 'Prolific', desc: 'Maintains 30+ public repositories' });
   }
 
-  // Day 16: Dynamic Filtering & Sorting Logic
+  // Filtering & Sorting Logic
   const availableLanguages = data && data.topRepos 
     ? ['All', ...new Set(data.topRepos.map(r => r.language).filter(l => l !== 'Unknown'))]
     : ['All'];
@@ -143,7 +116,7 @@ export default function Report() {
         })
     : [];
 
-  // PDF Download Logic
+  // Actions
   const handleDownloadPdf = async () => {
     const element = reportRef.current;
     const canvas = await html2canvas(element, { scale: 2 });
@@ -156,133 +129,104 @@ export default function Report() {
   };
 
   const handleShareProfile = () => {
-  // Copies the current URL in the browser window
-  navigator.clipboard.writeText(window.location.href);
-
-  // Triggers the beautiful success pop-up
-  toast.success('Profile link copied to clipboard!', {
-    icon: '🔗',
-  });
-};
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Profile link copied to clipboard!', { icon: '🔗' });
+  };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '50px auto', fontFamily: 'sans-serif', padding: '0 20px' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', width: '100%' }}>
       
-      {/* Top Navigation Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <Link to="/" style={{ textDecoration: 'none', color: '#0366d6', fontWeight: 'bold' }}>← Back to Search</Link>
-        
-        {/* Action Buttons Container */}
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={handleShareProfile}
-            style={{ padding: '8px 16px', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: 'background-color 0.2s' }}
-          >
-            🔗 Share
-          </button>
-
-          <button 
-            onClick={handleDownloadPdf}
-            style={{ padding: '8px 16px', backgroundColor: '#2ea44f', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            📄 Export PDF
-          </button>
-        </div>
+      {/* Action Buttons Container */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginBottom: '20px' }}>
+        <button onClick={handleShareProfile} className="btn-primary" style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', border: '1px solid var(--border)' }}>
+          🔗 Share Link
+        </button>
+        <button onClick={handleDownloadPdf} className="btn-primary" style={{ backgroundColor: '#10b981' }}>
+          📄 Export PDF
+        </button>
       </div>
       
       {/* PDF CAPTURE AREA */}
-      <div ref={reportRef} style={{ backgroundColor: 'var(--bg-main)', padding: '20px', borderRadius: '8px' }}>
+      <div ref={reportRef} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
-        {/* Profile Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
-          <img src={data.avatarUrl} alt="Avatar" style={{ width: '120px', borderRadius: '50%', border: '4px solid var(--bg-card)' }} />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '2em', color: 'var(--text-main)' }}>{data.name || data.username}</h1>
-            <p style={{ margin: '8px 0', color: 'var(--text-muted)', fontSize: '1.1em' }}>{data.bio}</p>
-            <div style={{ display: 'flex', gap: '15px', marginTop: '10px' }}>
-              <span style={{ backgroundColor: 'var(--bg-card)', color: '#0366d6', padding: '5px 10px', borderRadius: '12px', fontSize: '0.9em', fontWeight: 'bold', border: '1px solid var(--border)' }}>
+        {/* Profile Header Card */}
+        <div className="dashboard-card" style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', marginBottom: 0 }}>
+          <img src={data.avatarUrl} alt="Avatar" style={{ width: '120px', borderRadius: '50%', border: '4px solid var(--border)' }} />
+          <div style={{ flex: 1 }}>
+            <h1 style={{ margin: 0, fontSize: '2.5rem', color: 'var(--text-main)' }}>{data.name || data.username}</h1>
+            <p style={{ margin: '8px 0', color: 'var(--text-muted)', fontSize: '1.1rem' }}>{data.bio}</p>
+            <div style={{ display: 'flex', gap: '15px', marginTop: '15px', flexWrap: 'wrap' }}>
+              <span style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>
                 👥 {data.followers} Followers
               </span>
-              <span style={{ backgroundColor: 'var(--bg-card)', color: '#0366d6', padding: '5px 10px', borderRadius: '12px', fontSize: '0.9em', fontWeight: 'bold', border: '1px solid var(--border)' }}>
+              <span style={{ backgroundColor: 'rgba(37, 99, 235, 0.1)', color: 'var(--primary)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.9rem', fontWeight: 'bold' }}>
                 📦 {data.publicRepos} Repos
               </span>
             </div>
           </div>
         </div>
         
-        {/* Day 17: Achievements Badges Section */}
+        {/* Badges Section */}
         {badges.length > 0 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px', paddingBottom: '20px', borderBottom: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
             {badges.map((badge, idx) => (
-              <div 
-                key={idx} 
-                title={badge.desc} 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px', 
-                  padding: '8px 14px', 
-                  backgroundColor: 'var(--bg-card)', 
-                  border: '1px solid var(--border)', 
-                  borderRadius: '20px', 
-                  fontSize: '0.95em', 
-                  color: 'var(--text-main)', 
-                  cursor: 'help', 
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
-                  transition: 'transform 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                <span style={{ fontSize: '1.2em' }}>{badge.icon}</span>
-                <strong>{badge.title}</strong>
+              <div key={idx} title={badge.desc} className="dashboard-card" style={{ 
+                margin: 0, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: '8px', 
+                flex: '1 1 auto', justifyContent: 'center', cursor: 'help' 
+              }}>
+                <span style={{ fontSize: '1.4rem' }}>{badge.icon}</span>
+                <strong style={{ color: 'var(--text-main)' }}>{badge.title}</strong>
               </div>
             ))}
           </div>
         )}
 
-        {/* Scorecard & Radar Chart Section */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', marginTop: '30px', gap: '20px' }}>
-          <div style={{ flex: '1 1 300px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-            <h2 style={{ marginTop: 0, fontSize: '2.5em', color: 'var(--text-main)', textAlign: 'center' }}>
-              {data.scores.overall} <span style={{ fontSize: '0.4em', color: 'var(--text-muted)' }}>/ 100</span>
+        {/* Scorecard & Radar Chart Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+          
+          <div className="dashboard-card" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <h2 style={{ marginTop: 0, fontSize: '3rem', color: 'var(--text-main)', textAlign: 'center', marginBottom: '5px' }}>
+              {data.scores.overall} <span style={{ fontSize: '1rem', color: 'var(--text-muted)' }}>/ 100</span>
             </h2>
-            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '20px' }}>OVERALL SCORE</p>
-            <hr style={{ border: 'none', borderTop: '1px solid var(--border)', marginBottom: '20px' }} />
-            <ul style={{ listStyleType: 'none', padding: 0, fontSize: '1.1em', display: 'flex', flexDirection: 'column', gap: '15px', color: 'var(--text-main)' }}>
-              <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>📈 Activity</span> <strong>{data.scores.activity}/25</strong></li>
-              <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>💻 Code Quality</span> <strong>{data.scores.codeQuality}/20</strong></li>
-              <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>🌐 Diversity</span> <strong>{data.scores.diversity}/20</strong></li>
-              <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>🤝 Community</span> <strong>{data.scores.community}/20</strong></li>
+            <p style={{ textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'bold', letterSpacing: '1px', marginBottom: '24px', fontSize: '0.9rem' }}>OVERALL SCORE</p>
+            
+            <ul style={{ listStyleType: 'none', padding: 0, margin: 0, fontSize: '1.1rem', display: 'flex', flexDirection: 'column', gap: '16px', color: 'var(--text-main)' }}>
+              <li style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}><span>📈 Activity</span> <strong>{data.scores.activity}/25</strong></li>
+              <li style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}><span>💻 Code Quality</span> <strong>{data.scores.codeQuality}/20</strong></li>
+              <li style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}><span>🌐 Diversity</span> <strong>{data.scores.diversity}/20</strong></li>
+              <li style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}><span>🤝 Community</span> <strong>{data.scores.community}/20</strong></li>
               <li style={{ display: 'flex', justifyContent: 'space-between' }}><span>🎯 Hiring Ready</span> <strong>{data.scores.hiringReady}/15</strong></li>
             </ul>
           </div>
-          <div style={{ flex: '1 1 400px', height: '350px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+
+          <div className="dashboard-card" style={{ margin: 0, height: '400px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
+              <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
                 <PolarGrid stroke="var(--border)" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 14 }} />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-muted)', fontSize: 13 }} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                <Radar name="Score" dataKey="score" stroke="#0366d6" fill="#0366d6" fillOpacity={0.5} />
+                <Radar name="Score" dataKey="score" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.6} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-main)', borderRadius: '8px' }} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
+
         </div>
 
         {/* Language Pie Chart */}
         {languageData.length > 0 && (
-          <div style={{ marginTop: '40px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)' }}>
-            <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Language Proficiency</h2>
-            <div style={{ height: '300px', width: '100%' }}>
+          <div className="dashboard-card" style={{ margin: 0 }}>
+            <h3 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Language Proficiency</h3>
+            <div style={{ height: '350px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={languageData} cx="50%" cy="50%" innerRadius={80} outerRadius={110} paddingAngle={3} dataKey="value">
+                  <Pie data={languageData} cx="50%" cy="50%" innerRadius={90} outerRadius={130} paddingAngle={4} dataKey="value">
                     {languageData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-main)', borderRadius: '8px' }} itemStyle={{ color: 'var(--text-main)' }} />
-                  <Legend wrapperStyle={{ color: 'var(--text-main)' }}/>
+                  <Legend wrapperStyle={{ color: 'var(--text-main)', paddingTop: '20px' }}/>
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -290,13 +234,13 @@ export default function Report() {
         )}
 
         {/* GitHub Calendar */}
-        <div style={{ marginTop: '40px', padding: '25px', backgroundColor: 'var(--bg-card)', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', border: '1px solid var(--border)', overflowX: 'auto' }}>
-          <h2 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Contribution History</h2>
-          <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--text-main)', minWidth: '700px' }}>
+        <div className="dashboard-card" style={{ margin: 0, overflowX: 'auto' }}>
+          <h3 style={{ marginTop: 0, color: 'var(--text-main)', textAlign: 'center', marginBottom: '20px' }}>Contribution History</h3>
+          <div style={{ display: 'flex', justifyContent: 'center', color: 'var(--text-main)', minWidth: '750px', padding: '10px 0' }}>
             <GitHubCalendar 
               username={username} 
               blockSize={14} 
-              blockMargin={5} 
+              blockMargin={6} 
               fontSize={14} 
               colorScheme={document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'} 
             />
@@ -304,35 +248,24 @@ export default function Report() {
         </div>
 
         {/* Interactive Repositories Section */}
-        <div style={{ marginTop: '50px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2px solid var(--border)', paddingBottom: '15px', marginBottom: '20px', flexWrap: 'wrap', gap: '15px' }}>
-            <h2 style={{ color: 'var(--text-main)', margin: 0 }}>
-              Repositories <span style={{ fontSize: '0.6em', color: 'var(--text-muted)', backgroundColor: 'var(--bg-card)', padding: '4px 10px', borderRadius: '12px', border: '1px solid var(--border)', verticalAlign: 'middle' }}>{displayedRepos.length}</span>
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', marginBottom: '24px' }}>
+            <h2 style={{ color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
+              Repositories 
+              <span style={{ fontSize: '1rem', backgroundColor: 'var(--primary)', color: 'white', padding: '4px 12px', borderRadius: '20px' }}>
+                {displayedRepos.length}
+              </span>
             </h2>
             
-            {/* Control Bar */}
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <input 
-                type="text" 
-                placeholder="Find a repository..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none' }}
-              />
-              <select 
-                value={filterLang} 
-                onChange={(e) => setFilterLang(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none', cursor: 'pointer' }}
-              >
+            {/* Filter / Sort Controls */}
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <input type="text" className="modern-input" placeholder="Search repos..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ width: 'auto' }} />
+              <select className="modern-input" value={filterLang} onChange={(e) => setFilterLang(e.target.value)} style={{ width: 'auto', cursor: 'pointer' }}>
                 {availableLanguages.map(lang => (
                   <option key={lang} value={lang}>{lang}</option>
                 ))}
               </select>
-              <select 
-                value={sortType} 
-                onChange={(e) => setSortType(e.target.value)}
-                style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', outline: 'none', cursor: 'pointer' }}
-              >
+              <select className="modern-input" value={sortType} onChange={(e) => setSortType(e.target.value)} style={{ width: 'auto', cursor: 'pointer' }}>
                 <option value="stars">⭐ Sort by Stars</option>
                 <option value="forks">🍴 Sort by Forks</option>
                 <option value="name">🔤 Sort by Name</option>
@@ -340,24 +273,23 @@ export default function Report() {
             </div>
           </div>
           
-          {/* Repository Grid */}
+          {/* THE FIXED REPOSITORY GRID */}
           {displayedRepos.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+            <div className="repo-grid">
               {displayedRepos.map((repo, index) => (
-                <a key={index} href={repo.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ padding: '20px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '6px', height: '100%', transition: 'transform 0.2s', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-                    <h3 style={{ margin: '0 0 10px 0', color: '#0366d6', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      📦 {repo.name}
+                <a key={index} href={repo.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                  <div className="dashboard-card" style={{ margin: 0, height: '100%', display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      📦 <span style={{ wordBreak: 'break-word' }}>{repo.name}</span>
                     </h3>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9em', marginBottom: '15px', lineHeight: '1.4' }}>
-                      {/* SAFE CHECK: Checks if description exists before checking length */}
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '20px', flex: 1, lineHeight: '1.5' }}>
                       {repo.description 
-                        ? (repo.description.length > 100 ? repo.description.substring(0, 100) + '...' : repo.description) 
+                        ? (repo.description.length > 120 ? repo.description.substring(0, 120) + '...' : repo.description) 
                         : 'No description provided.'}
                     </p>
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '0.85em', color: 'var(--text-muted)' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ width: '10px', height: '10px', backgroundColor: '#f1e05a', borderRadius: '50%' }}></span>
+                    <div style={{ display: 'flex', gap: '16px', fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: '500', marginTop: 'auto' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ width: '12px', height: '12px', backgroundColor: '#f1e05a', borderRadius: '50%' }}></span>
                         {repo.language}
                       </span>
                       <span>⭐ {repo.stars}</span>
@@ -368,14 +300,13 @@ export default function Report() {
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px', backgroundColor: 'var(--bg-card)', borderRadius: '8px', border: '1px dashed var(--border)', color: 'var(--text-muted)' }}>
-              No repositories match your search criteria.
+            <div className="dashboard-card" style={{ textAlign: 'center', padding: '40px', borderStyle: 'dashed' }}>
+              <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>No repositories match your search criteria.</p>
             </div>
           )}
         </div>
 
       </div> 
-      {/* END OF PDF CAPTURE AREA */}
     </div>
   );
 }

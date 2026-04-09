@@ -1,208 +1,75 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-body {
-  margin: 0;
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
-
 /* client/src/index.css */
 
-/* 1. Light Mode Variables (Default) */
-:root {
-  --bg-main: #ffffff;
-  --text-main: #24292e;
-  --bg-card: #f6f8fa;
-  --border: #eaecef;
-  --text-muted: #586069;
+* {
+  box-sizing: border-box; /* This stops elements from overflowing their containers! */
 }
 
-/* 2. Dark Mode Variables */
+:root {
+  /* LIGHT MODE (Soft Professional Gradient) */
+  --bg-gradient: linear-gradient(135deg, #f6f8fd 0%, #f1f5f9 100%);
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --border: #e2e8f0;
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
 [data-theme='dark'] {
-  --bg-main: #0d1117;
-  --text-main: #c9d1d9;
-  --bg-card: #161b22;
-  --border: #30363d;
-  --text-muted: #8b949e;
-}
-
-/* 3. Apply variables to the global body */
-body {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth fade effect */
-  margin: 0;
-  min-height: 100vh;
-}
-
-/* Day 14: Skeleton Loading Animation */
-@keyframes pulse {
-  0% {
-    background-color: var(--border);
-  }
-  50% {
-    background-color: var(--bg-card);
-  }
-  100% {
-    background-color: var(--border);
-  }
-}
-
-.skeleton {
-  animation: pulse 1.5s infinite ease-in-out;
-  border-radius: 6px;
-}
-
-/* client/src/index.css */
-
-:root {
-  /* The Modern Dashboard Palette */
-  --bg-app: #f3f4f6;       /* Soft light gray for the whole page */
-  --bg-card: #ffffff;      /* Pure white for the content boxes */
-  --text-main: #111827;    /* Very dark gray for readable text */
-  --text-muted: #6b7280;   /* Medium gray for secondary text */
-  --primary-color: #2563eb; /* Professional Royal Blue */
-  --primary-hover: #1d4ed8; 
-  --border-color: #e5e7eb; /* Soft borders */
-  --success-color: #10b981; /* Green for winning scores */
+  /* DARK MODE (Deep Space Gradient) */
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --bg-card: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --primary: #3b82f6;
+  --primary-hover: #60a5fa;
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
 }
 
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-app);
+  background: var(--bg-gradient);
+  background-attachment: fixed; /* Keeps gradient smooth when scrolling */
   color: var(--text-main);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
 }
 
-/* Reusable Dashboard Card Style */
+/* Professional Card Component */
 .dashboard-card {
   background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: var(--card-shadow);
   margin-bottom: 24px;
+  overflow: hidden; /* Forces overflowing content to stay inside */
+  transition: all 0.3s ease;
 }
 
-/* Global Button Style */
-.btn-primary {
-  background-color: var(--primary-color);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+/* Responsive Grid for Repositories (Fixes Image 2) */
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
 }
 
-.btn-primary:hover {
-  background-color: var(--primary-hover);
+/* Form Inputs */
+.modern-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+.modern-input:focus {
+  border-color: var(--primary);
 }
